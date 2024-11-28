@@ -1,0 +1,66 @@
+create database bock_train;
+USE bock_train;
+
+CREATE TABLE user(
+    id int  primary key,
+    email varchar(20)  unique not null ,
+    password varchar(20) not null ,
+    full_name varchar(20) not null ,
+    created_at datetime default  current_timestamp
+
+
+);
+
+create table train(
+    id int primary key ,
+    train_number int unique  not null ,
+    departure_station varchar(20) not null ,
+    arrival_station  varchar(20) not null ,
+    departure_time   datetime  not null ,
+    arrival_time    datetime not null
+);
+
+create table tickt(
+    id  int primary key ,
+    user_id int  ,
+    foreign key (user_id)references user(id),
+    train_id int,
+    foreign key (train_id)references train(id),
+    seat_number int not null ,
+    booking_time datetime default current_timestamp,
+    status varchar(10) check ( status='booked'or status='paid'or status='cancelled')
+
+);
+
+create table payment(
+    id int primary key ,
+    ticket_id int,
+    foreign key (ticket_id)references tickt(id),
+    pay_method varchar(20) not null check (pay_method='credit card'or pay_method='paybal'),
+    pay_status varchar(20) not null  check (pay_status='pending'or pay_status='completed'or pay_status='failed'),
+     amount  double not null ,
+    payment_date datetime default current_timestamp
+
+);
+
+INSERT INTO user VALUES(1, 'ee@gmail.com', 'password123', 'ebtehal Alfaifi','2023-12-1');
+INSERT INTO train VALUES(1, 101, 'Station A', 'Station B', '2024-12-01 10:00:00', '2024-12-01 12:00:00');
+INSERT INTO tickt VALUES(1, 1, 1, 25, '2024-12-01 10:00:00','booked');
+INSERT INTO payment VALUES (1, 1, 'credit card', 'completed', 50.00,'2023-12-01 11:00:00');
+
+
+UPDATE user SET email = 'new_email@gmail.com' WHERE id = 1;
+UPDATE tickt SET status = 'paid'WHERE id = 1;
+UPDATE train SET departure_station = 'New Station A', arrival_station = 'New Station B'WHERE id = 1;
+UPDATE payment SET pay_status = 'completed', amount = 60.00 WHERE id = 1;
+
+SELECT * FROM user;
+SELECT * FROM train;
+SELECT * FROM tickt;
+SELECT * FROM payment;
+
+
+
+DELETE FROM payment WHERE ticket_id IN (SELECT id FROM tickt WHERE user_id = 1); # عشان علاقة الارتياط ما اقدر احذف على طول
+DELETE FROM tickt WHERE user_id = 1;
+DELETE FROM user WHERE id = 1;
